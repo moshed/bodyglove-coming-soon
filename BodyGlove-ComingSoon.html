@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body Glove — Coming Soon</title>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700,800&f[]=satoshi@400,500,700&display=swap">
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — BODY GLOVE THEME
+           Yellow & black brand palette with sporty energy
+           =========================================== */
+        :root {
+            --bg: #0c0c0c;
+            --bg-card: #141414;
+            --bg-subtle: #1a1a1a;
+            --yellow: #FFD600;
+            --yellow-dim: rgba(255, 214, 0, 0.15);
+            --yellow-glow: rgba(255, 214, 0, 0.4);
+            --white: #f5f5f5;
+            --gray: #888;
+            --gray-dark: #444;
+
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+
+            --title-size: clamp(2.5rem, 7vw, 6rem);
+            --h2-size: clamp(1.8rem, 4.5vw, 3.5rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.5rem);
+            --body-size: clamp(0.75rem, 1.3vw, 1.05rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(0.75rem, 2vw, 2rem);
+        }
+
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--white);
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        /* ===========================================
+           SLIDE CONTAINER
+           Each slide = exact viewport height
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            position: relative;
+        }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--yellow);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--yellow-glow);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.75rem, 2vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray-dark);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            background: var(--yellow);
+            box-shadow: 0 0 8px var(--yellow-glow);
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover {
+            background: var(--yellow);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(1rem, 2vw, 1.5rem);
+            right: clamp(1rem, 2vw, 2rem);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--gray);
+            z-index: 100;
+            letter-spacing: 0.1em;
+        }
+
+        .slide-counter .current {
+            color: var(--yellow);
+            font-weight: 700;
+        }
+
+        /* ===========================================
+           BRAND WATERMARK
+           =========================================== */
+        .brand-watermark {
+            position: fixed;
+            bottom: clamp(1rem, 2vw, 1.5rem);
+            left: clamp(1rem, 2vw, 2rem);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 700;
+            color: var(--gray-dark);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            z-index: 100;
+        }
+
+        /* ===========================================
+           TITLE SLIDE (#1)
+           Full-screen dramatic intro
+           =========================================== */
+        .slide--title {
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: var(--bg);
+            text-align: center;
+        }
+
+        .slide--title::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 40%, var(--yellow-dim) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(255, 214, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 214, 0, 0.05) 0%, transparent 40%);
+        }
+
+        /* Animated grid lines */
+        .slide--title::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 214, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 214, 0, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .title-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title-badge {
+            display: inline-block;
+            padding: 0.4em 1.5em;
+            border: 2px solid var(--yellow);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 700;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--yellow);
+            margin-bottom: clamp(1rem, 3vw, 2.5rem);
+        }
+
+        .title-main {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 800;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: clamp(0.5rem, 2vw, 1.5rem);
+        }
+
+        .title-main .accent {
+            color: var(--yellow);
+            text-shadow: 0 0 40px var(--yellow-glow);
+        }
+
+        .title-sub {
+            font-size: var(--body-size);
+            color: var(--gray);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .title-divider {
+            width: 60px;
+            height: 3px;
+            background: var(--yellow);
+            margin: clamp(1rem, 2vw, 2rem) auto;
+            box-shadow: 0 0 10px var(--yellow-glow);
+        }
+
+        .title-product-count {
+            font-family: var(--font-display);
+            font-size: clamp(0.7rem, 1vw, 0.85rem);
+            color: var(--gray);
+            margin-top: clamp(0.5rem, 1.5vw, 1rem);
+            letter-spacing: 0.1em;
+        }
+
+        .title-product-count span {
+            color: var(--yellow);
+            font-weight: 700;
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+        }
+
+        /* ===========================================
+           PRODUCT SLIDE — LAYOUT
+           Left: text info, Right: product image
+           =========================================== */
+        .slide--product {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+            padding-right: clamp(1rem, 3vw, 3rem);
+            position: relative;
+        }
+
+        /* Large faded slide number */
+        .product-num {
+            position: absolute;
+            top: clamp(0.5rem, 2vw, 1.5rem);
+            left: var(--slide-padding);
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 800;
+            color: rgba(255, 214, 0, 0.04);
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .product-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.3em 0.9em;
+            background: var(--yellow-dim);
+            border-left: 3px solid var(--yellow);
+            font-size: var(--small-size);
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--yellow);
+            margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
+            width: fit-content;
+        }
+
+        .product-name {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        .product-name .yellow {
+            color: var(--yellow);
+        }
+
+        .product-desc {
+            font-size: var(--body-size);
+            color: var(--gray);
+            line-height: 1.6;
+            max-width: 400px;
+            margin-bottom: clamp(1rem, 2vw, 2rem);
+        }
+
+        .product-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.3rem, 0.8vw, 0.6rem);
+        }
+
+        .product-features li {
+            font-size: var(--body-size);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+        }
+
+        .product-features li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--yellow);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .coming-soon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            margin-top: clamp(1rem, 2vw, 2rem);
+            padding: 0.5em 1.2em;
+            border: 1px solid var(--yellow);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--yellow);
+            width: fit-content;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coming-soon-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--yellow-dim), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Product image area */
+        .product-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+
+        .product-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 30%, var(--bg-card) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.visible .product-image img {
+            transform: scale(1);
+        }
+
+        .product-image img {
+            transform: scale(1.05);
+        }
+
+        /* Yellow accent corner brackets on image */
+        .product-image .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            z-index: 2;
+        }
+
+        .corner--tl { top: clamp(0.75rem, 2vw, 1.5rem); left: clamp(0.75rem, 2vw, 1.5rem); border-top: 2px solid var(--yellow); border-left: 2px solid var(--yellow); }
+        .corner--tr { top: clamp(0.75rem, 2vw, 1.5rem); right: clamp(0.75rem, 2vw, 1.5rem); border-top: 2px solid var(--yellow); border-right: 2px solid var(--yellow); }
+        .corner--bl { bottom: clamp(0.75rem, 2vw, 1.5rem); left: clamp(0.75rem, 2vw, 1.5rem); border-bottom: 2px solid var(--yellow); border-left: 2px solid var(--yellow); }
+        .corner--br { bottom: clamp(0.75rem, 2vw, 1.5rem); right: clamp(0.75rem, 2vw, 1.5rem); border-bottom: 2px solid var(--yellow); border-right: 2px solid var(--yellow); }
+
+        /* ===========================================
+           DUAL-PRODUCT SLIDE
+           Two products side by side
+           =========================================== */
+        .slide--dual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .dual-panel {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dual-panel:first-child {
+            border-right: 1px solid var(--bg-subtle);
+        }
+
+        .dual-image {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+
+        .dual-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.visible .dual-image img {
+            transform: scale(1);
+        }
+
+        .dual-image img {
+            transform: scale(1.08);
+        }
+
+        .dual-info {
+            padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 2.5vw, 2rem);
+            background: var(--bg);
+            border-top: 2px solid var(--yellow);
+        }
+
+        .dual-info .product-tag {
+            margin-bottom: clamp(0.3rem, 0.8vw, 0.5rem);
+            font-size: clamp(0.5rem, 0.75vw, 0.7rem);
+        }
+
+        .dual-info .product-name {
+            font-size: clamp(1.2rem, 2.8vw, 2rem);
+            margin-bottom: clamp(0.25rem, 0.6vw, 0.4rem);
+        }
+
+        .dual-info .product-desc {
+            font-size: var(--small-size);
+            margin-bottom: 0;
+        }
+
+        /* ===========================================
+           REVEAL ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        /* Stagger delays */
+        .d1 { transition-delay: 0.1s; }
+        .d2 { transition-delay: 0.2s; }
+        .d3 { transition-delay: 0.3s; }
+        .d4 { transition-delay: 0.4s; }
+        .d5 { transition-delay: 0.5s; }
+        .d6 { transition-delay: 0.6s; }
+        .d7 { transition-delay: 0.7s; }
+
+        /* ===========================================
+           RESPONSIVE — MOBILE / SHORT VIEWPORTS
+           =========================================== */
+        @media (max-width: 768px) {
+            .slide--product {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+
+            .product-info {
+                order: 2;
+                padding: clamp(1rem, 3vw, 2rem);
+            }
+
+            .product-image {
+                order: 1;
+            }
+
+            .product-num {
+                display: none;
+            }
+
+            .slide--dual {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+
+            .dual-panel:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--bg-subtle);
+            }
+
+            .nav-dots { display: none; }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2vw, 1.5rem);
+                --h2-size: clamp(1.4rem, 3.5vw, 2.2rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+
+            .product-num { display: none; }
+            .product-desc { display: none; }
+            .nav-dots { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --title-size: clamp(1.5rem, 5vw, 3rem);
+                --h2-size: clamp(1.2rem, 3vw, 1.8rem);
+                --slide-padding: clamp(0.5rem, 1.5vw, 1rem);
+            }
+
+            .title-badge, .title-divider, .title-product-count { display: none; }
+            .coming-soon-badge { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal, .reveal-left, .reveal-scale {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+
+            @keyframes shimmer { 0%, 100% { left: -100%; } }
+            @keyframes gridPulse { 0%, 100% { opacity: 0.7; } }
+
+            .product-image img, .dual-image img {
+                transform: scale(1) !important;
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress" id="progress"></div>
+
+    <!-- Nav dots -->
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter">
+        <span class="current" id="currentSlide">01</span> / <span id="totalSlides">09</span>
+    </div>
+
+    <!-- Brand watermark -->
+    <div class="brand-watermark">Body Glove</div>
+
+    <!-- =============================================
+         SLIDE 1: TITLE — COMING SOON
+         ============================================= -->
+    <section class="slide slide--title" data-slide="1">
+        <div class="title-content">
+            <div class="title-badge reveal d1">New Product Line</div>
+            <h1 class="title-main reveal d2">
+                <span class="accent">COMING</span><br>SOON
+            </h1>
+            <div class="title-divider reveal d3"></div>
+            <p class="title-sub reveal d4">Outdoor Games &amp; Sports Collection</p>
+            <div class="title-product-count reveal d5">
+                <span>8</span> NEW PRODUCTS
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 2: WATER POLO + BONUS TARGET GAME
+         ============================================= -->
+    <section class="slide slide--product" data-slide="2">
+        <div class="product-info">
+            <div class="product-num reveal d1">01</div>
+            <div class="product-tag reveal d2">Pool Game</div>
+            <h2 class="product-name reveal d3">WATER<br><span class="yellow">POLO</span></h2>
+            <p class="product-desc reveal d4">Inflatable pool goal with precision target holes. Includes bonus target game for double the fun.</p>
+            <ul class="product-features reveal d5">
+                <li>Floating goal frame</li>
+                <li>Bonus target game included</li>
+                <li>Body Glove branded ball</li>
+                <li>Quick-inflate setup</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/water-polo.png" alt="Body Glove Water Polo pool game" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 3: NEOPRENE PADDLES
+         ============================================= -->
+    <section class="slide slide--product" data-slide="3">
+        <div class="product-info">
+            <div class="product-num reveal d1">02</div>
+            <div class="product-tag reveal d2">Beach Game</div>
+            <h2 class="product-name reveal d3">NEOPRENE<br><span class="yellow">PADDLES</span></h2>
+            <p class="product-desc reveal d4">Premium neoprene paddle set built for the beach. Lightweight, water-resistant, and built to last.</p>
+            <ul class="product-features reveal d5">
+                <li>Neoprene construction</li>
+                <li>Lightweight design</li>
+                <li>Water-resistant material</li>
+                <li>Includes ball</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/neoprene-paddles.png" alt="Body Glove Neoprene Paddles on the beach" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 4: AMAZING RACKET ROCKETS
+         ============================================= -->
+    <section class="slide slide--product" data-slide="4">
+        <div class="product-info">
+            <div class="product-num reveal d1">03</div>
+            <div class="product-tag reveal d2">Beach Game</div>
+            <h2 class="product-name reveal d3">AMAZING<br>RACKET<br><span class="yellow">ROCKETS</span></h2>
+            <p class="product-desc reveal d4">High-flying fun with oversized rackets and a rocket shuttlecock. Play anywhere — beach, park, or backyard.</p>
+            <ul class="product-features reveal d5">
+                <li>Oversized rackets</li>
+                <li>Rocket shuttlecock</li>
+                <li>Play anywhere, any surface</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/racket-rockets.png" alt="Body Glove Amazing Racket Rockets on the beach" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 5: WATER KNEE HOCKEY
+         ============================================= -->
+    <section class="slide slide--product" data-slide="5">
+        <div class="product-info">
+            <div class="product-num reveal d1">04</div>
+            <div class="product-tag reveal d2">Outdoor / Water</div>
+            <h2 class="product-name reveal d3">WATER<br>KNEE<br><span class="yellow">HOCKEY</span></h2>
+            <p class="product-desc reveal d4">A splashing take on hockey. Water-soaked play mat with mini goals for fast-paced knee-level action.</p>
+            <ul class="product-features reveal d5">
+                <li>Water play mat</li>
+                <li>Two mini goals</li>
+                <li>Knee-level play for kids</li>
+                <li>Sets up in minutes</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/water-knee-hockey.png" alt="Body Glove Water Knee Hockey game" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 6: WINDMILL TARGET PRACTICE
+         ============================================= -->
+    <section class="slide slide--product" data-slide="6">
+        <div class="product-info">
+            <div class="product-num reveal d1">05</div>
+            <div class="product-tag reveal d2">Beach Game</div>
+            <h2 class="product-name reveal d3">WINDMILL<br>TARGET<br><span class="yellow">PRACTICE</span></h2>
+            <p class="product-desc reveal d4">Rotating windmill target system with multiple scoring zones. Includes ball launcher and scoring rack.</p>
+            <ul class="product-features reveal d5">
+                <li>Rotating windmill targets</li>
+                <li>Multiple scoring zones</li>
+                <li>Includes scoring rack</li>
+                <li>Beach or backyard play</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/windmill-target.png" alt="Body Glove Windmill Target Practice on the beach" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 7: SUPER SLAMMER + PORTABLE DISC GAME
+         Two products — split layout
+         ============================================= -->
+    <section class="slide slide--dual" data-slide="7">
+        <div class="dual-panel">
+            <div class="dual-image reveal-scale d2">
+                <img src="assets/portable-disc-game.png" alt="Body Glove Portable Disc Game" loading="lazy">
+            </div>
+            <div class="dual-info">
+                <div class="product-tag reveal d3">Outdoor Game</div>
+                <h2 class="product-name reveal d4">PORTABLE<br><span class="yellow">DISC GAME</span></h2>
+                <p class="product-desc reveal d5">Collapsible disc arena with net enclosure. Compact enough to take anywhere.</p>
+            </div>
+        </div>
+        <div class="dual-panel">
+            <div class="dual-image reveal-scale d3">
+                <img src="assets/super-slammer.png" alt="Body Glove Super Slammer" loading="lazy">
+            </div>
+            <div class="dual-info">
+                <div class="product-tag reveal d4">Outdoor Game</div>
+                <h2 class="product-name reveal d5">SUPER<br><span class="yellow">SLAMMER</span></h2>
+                <p class="product-desc reveal d6">Tower-style slam game with pop-out discs and target bins. Fast-paced competitive fun.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 8: POP-UP TABLE SLAM
+         ============================================= -->
+    <section class="slide slide--product" data-slide="8">
+        <div class="product-info">
+            <div class="product-num reveal d1">07</div>
+            <div class="product-tag reveal d2">Outdoor Game</div>
+            <h2 class="product-name reveal d3">POP-UP<br>TABLE<br><span class="yellow">SLAM</span></h2>
+            <p class="product-desc reveal d4">Portable bounce table with net divider. Folds flat for easy transport — sets up in seconds for competitive play.</p>
+            <ul class="product-features reveal d5">
+                <li>Pop-up frame design</li>
+                <li>Full-size playing surface</li>
+                <li>Includes 2 balls</li>
+                <li>Folds flat for transport</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/pop-up-table-slam.png" alt="Body Glove Pop-Up Table Slam" loading="lazy">
+        </div>
+    </section>
+
+    <!-- =============================================
+         SLIDE 9: SILENT BASKETBALLS
+         ============================================= -->
+    <section class="slide slide--product" data-slide="9">
+        <div class="product-info">
+            <div class="product-num reveal d1">08</div>
+            <div class="product-tag reveal d2">Indoor / Outdoor</div>
+            <h2 class="product-name reveal d3">SILENT<br><span class="yellow">BASKETBALLS</span></h2>
+            <p class="product-desc reveal d4">Foam basketballs that play silently — perfect for indoor practice, apartment living, and all-ages fun. Available in 3 sizes.</p>
+            <ul class="product-features reveal d5">
+                <li>Silent foam construction</li>
+                <li>Size 3, 5, and 7</li>
+                <li>Indoor-friendly</li>
+                <li>Real basketball feel</li>
+            </ul>
+            <div class="coming-soon-badge reveal d6">Coming Soon</div>
+        </div>
+        <div class="product-image reveal-scale d3">
+            <span class="corner corner--tl"></span>
+            <span class="corner corner--tr"></span>
+            <span class="corner corner--bl"></span>
+            <span class="corner corner--br"></span>
+            <img src="assets/silent-basketballs.png" alt="Body Glove Silent Basketballs in 3 sizes" loading="lazy">
+        </div>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Handles navigation, animations, progress
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.totalSlides = this.slides.length;
+                this.currentIndex = 0;
+
+                this.initNavDots();
+                this.initObserver();
+                this.initKeyboard();
+                this.initTouch();
+                this.updateCounter(0);
+            }
+
+            /* Navigation dots */
+            initNavDots() {
+                const nav = document.getElementById('navDots');
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => {
+                        this.slides[i].scrollIntoView({ behavior: 'smooth' });
+                    });
+                    nav.appendChild(dot);
+                });
+                this.dots = nav.querySelectorAll('.nav-dot');
+            }
+
+            /* Intersection Observer for scroll-triggered animations */
+            initObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            this.currentIndex = index;
+                            this.updateCounter(index);
+                            this.updateDots(index);
+                            this.updateProgress(index);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* Keyboard navigation */
+            initKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.goToSlide(this.currentIndex + 1);
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.goToSlide(this.currentIndex - 1);
+                    } else if (e.key === 'Home') {
+                        e.preventDefault();
+                        this.goToSlide(0);
+                    } else if (e.key === 'End') {
+                        e.preventDefault();
+                        this.goToSlide(this.totalSlides - 1);
+                    }
+                });
+            }
+
+            /* Touch/swipe navigation */
+            initTouch() {
+                let startY = 0;
+                let startX = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const diffY = startY - e.changedTouches[0].clientY;
+                    const diffX = startX - e.changedTouches[0].clientX;
+
+                    if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50) {
+                        if (diffY > 0) {
+                            this.goToSlide(this.currentIndex + 1);
+                        } else {
+                            this.goToSlide(this.currentIndex - 1);
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            goToSlide(index) {
+                if (index >= 0 && index < this.totalSlides) {
+                    this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            updateCounter(index) {
+                document.getElementById('currentSlide').textContent =
+                    String(index + 1).padStart(2, '0');
+            }
+
+            updateDots(index) {
+                this.dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            updateProgress(index) {
+                const pct = ((index + 1) / this.totalSlides) * 100;
+                document.getElementById('progress').style.width = pct + '%';
+            }
+        }
+
+        /* Initialize on load */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>
