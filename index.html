@@ -605,6 +605,32 @@
     </style>
 </head>
 <body>
+
+<!-- Password Gate -->
+<div id="password-gate" style="position:fixed;inset:0;z-index:99999;background:#0c0c0c;display:flex;align-items:center;justify-content:center;font-family:'Satoshi',sans-serif;">
+  <div style="text-align:center;max-width:360px;padding:2rem;">
+    <div style="font-family:'Clash Display',sans-serif;font-size:1.8rem;font-weight:800;color:#f5f5f5;margin-bottom:0.3rem;">BODY GLOVE <span style="color:#FFD600;">2026</span></div>
+    <p style="color:#888;font-size:0.85rem;margin-bottom:2rem;">Enter password to view this presentation</p>
+    <input id="pw-input" type="password" placeholder="Password" style="width:100%;padding:0.75rem 1rem;border:1.5px solid #333;border-radius:8px;font-size:1rem;font-family:inherit;outline:none;background:#141414;color:#f5f5f5;transition:border-color 0.2s;" onfocus="this.style.borderColor='#FFD600'" onblur="this.style.borderColor='#333'">
+    <p id="pw-error" style="color:#c44;font-size:0.8rem;margin-top:0.5rem;opacity:0;transition:opacity 0.2s;">&nbsp;</p>
+    <button id="pw-btn" style="width:100%;padding:0.75rem;background:#FFD600;color:#0c0c0c;border:none;border-radius:8px;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;margin-top:0.5rem;transition:background 0.2s;" onmouseover="this.style.background='#ffe44d'" onmouseout="this.style.background='#FFD600'">Enter</button>
+  </div>
+</div>
+<script>
+(function(){
+  var h='de8fa1cfafe9c73665def95e51ca2c3ca6f365ee4e9129672b132da038321a15';
+  async function sha(s){var e=new TextEncoder().encode(s);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+  async function check(){
+    var v=document.getElementById('pw-input').value;
+    var d=await sha(v);
+    if(d===h){document.getElementById('password-gate').style.display='none';}
+    else{var err=document.getElementById('pw-error');err.textContent='Incorrect password';err.style.opacity='1';}
+  }
+  document.getElementById('pw-btn').addEventListener('click',check);
+  document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+})();
+</script>
+
     <!-- Progress bar -->
     <div class="progress" id="progress"></div>
 
