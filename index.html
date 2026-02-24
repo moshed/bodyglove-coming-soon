@@ -618,7 +618,7 @@
 </div>
 <script>
 (function(){
-  var h='de8fa1cfafe9c73665def95e51ca2c3ca6f365ee4e9129672b132da038321a15';
+  var h='faf169b533cdcfa5bfe87e20e473027814f93ae4322d21311ebf4a5675a28664';
   async function sha(s){var e=new TextEncoder().encode(s);var b=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
   async function check(){
     var v=document.getElementById('pw-input').value;
